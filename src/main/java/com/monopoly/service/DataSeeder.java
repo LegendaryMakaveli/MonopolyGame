@@ -20,11 +20,15 @@ public class DataSeeder {
     private final HousingOptionRepository housingOptionRepository;
     private final DiceEventRepository diceEventRepository;
 
-
     @PostConstruct
     public void seed() {
-        seedHousingOptions();
-        seedDiceEvents();
+        try {
+            if (housingOptionRepository.count() == 0) {
+                seedHousingOptions();
+            }
+        } catch (Exception e) {
+            seedHousingOptions();
+        }
     }
 
     private void seedHousingOptions() {
