@@ -1,9 +1,7 @@
 package com.monopoly.service;
 
 import com.monopoly.data.model.*;
-import com.monopoly.data.repository.GameRepository;
-import com.monopoly.data.repository.PlayerRepository;
-import com.monopoly.data.repository.RoundRepository;
+import com.monopoly.data.repository.*;
 import com.monopoly.exception.GameNotFoundException;
 import com.monopoly.exception.InvalidGameActionException;
 import com.monopoly.exception.PlayerNotFoundException;
@@ -21,6 +19,18 @@ public class GameService {
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
     private final RoundRepository roundRepository;
+    private final PlayerRoundRepository playerRoundRepository;
+    private final InvestmentRepository investmentRepository;
+
+
+    @Transactional
+    public void deleteAllData() {
+        investmentRepository.deleteAll();
+        playerRoundRepository.deleteAll();
+        roundRepository.deleteAll();
+        playerRepository.deleteAll();
+        gameRepository.deleteAll();
+    }
 
 
     @Transactional

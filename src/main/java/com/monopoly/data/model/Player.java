@@ -1,5 +1,6 @@
 package com.monopoly.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class Player {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Game game;
 
     @Enumerated(EnumType.STRING)
@@ -38,9 +40,11 @@ public class Player {
     private Long finalNetWorthKobo;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PlayerRound> playerRounds = new ArrayList<>();
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Investment> investments = new ArrayList<>();
 }
 

@@ -27,7 +27,7 @@ public class GameController {
 
 
 
-    @PostMapping
+    @PostMapping("/createGame")
     public ResponseEntity<?> createGame() {
             Game game = gameService.createGame();
             List<Player> players = playerRepository.findByGameIdOrderByTurnOrder(game.getId());
