@@ -13,4 +13,4 @@ COPY --from=build /app/target/*.jar app.jar
 ENV PORT=8080
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3 -jar app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Djdk.tls.client.protocols=TLSv1.2,TLSv1.3 -jar app.jar"]
