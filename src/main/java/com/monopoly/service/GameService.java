@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Service
 @AllArgsConstructor
 public class GameService {
@@ -22,6 +21,7 @@ public class GameService {
     private final PlayerRoundRepository playerRoundRepository;
     private final InvestmentRepository investmentRepository;
 
+    private final GameEventPublisher eventPublisher;
 
     @Transactional
     public void deleteAllData() {
@@ -32,7 +32,6 @@ public class GameService {
         gameRepository.deleteAll();
     }
 
-
     @Transactional
     public Game createGame() {
         Game game = new Game();
@@ -40,7 +39,6 @@ public class GameService {
         game.setStatus(GameStatus.WAITING_FOR_PLAYERS);
         return gameRepository.save(game);
     }
-
 
     @Transactional
     public Player joinGame(String gameCode, String playerName) {
@@ -56,7 +54,8 @@ public class GameService {
         }
 
         if (playerRepository.existsByGameIdAndName(game.getId(), playerName)) {
-            throw new InvalidGameActionException("A player with name '" + playerName + "' already exists in this game.");
+            throw new InvalidGameActionException(
+                    "A player with name '" + playerName + "' already exists in this game.");
         }
 
         Player player = new Player();
@@ -64,7 +63,9 @@ public class GameService {
         player.setGame(game);
         player.setTurnOrder(currentPlayerCount + 1);
 
-        return playerRepository.save(player);
+        Player savedPlayer = playerRepository.save(player);
+        eventPublisher.publishPlayerJoined(gameCode, savedPlayer);
+        return savedPlayer;
     }
 
     @Transactional
@@ -87,9 +88,10 @@ public class GameService {
         Round round1 = createRound(game, 1);
         roundRepository.save(round1);
 
-        return gameRepository.save(game);
+        Game savedGame = gameRepository.save(game);
+        eventPublisher.publishGameStarted(gameCode, savedGame);
+        return savedGame;
     }
-
 
     @Transactional
     public Player pickHousing(Long playerId, HousingType housingType) {
@@ -138,8 +140,7 @@ public class GameService {
     private void validateRoundPhase(Game game, RoundPhase expectedPhase) {
         if (game.getCurrentPhase() != expectedPhase) {
             throw new InvalidGameActionException(
-                    "Wrong phase. Expected: " + expectedPhase + ", Current: " + game.getCurrentPhase()
-            );
+                    "Wrong phase. Expected: " + expectedPhase + ", Current: " + game.getCurrentPhase());
         }
     }
 

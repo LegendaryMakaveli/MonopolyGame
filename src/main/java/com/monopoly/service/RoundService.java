@@ -1,6 +1,5 @@
 package com.monopoly.service;
 
-
 import com.monopoly.data.model.*;
 import com.monopoly.data.repository.GameRepository;
 import com.monopoly.data.repository.PlayerRepository;
@@ -31,9 +30,9 @@ public class RoundService {
     private final LoanService loanService;
     private final DiceService diceService;
     private final InvestmentService investmentService;
+    private final GameEventPublisher eventPublisher;
     private static final long SURVIVAL_COST_KOBO = 70_000_000L;
     private static final long SALARY_KOBO = 240_000_000L;
-
 
     @Transactional
     public RoundResultResponse playRound(Long playerId, long loanPayment) {
@@ -50,7 +49,8 @@ public class RoundService {
         Round currentRound = roundRepository.findByGameIdAndRoundNumber(game.getId(), game.getCurrentRound())
                 .orElseThrow(() -> new InvalidGameActionException("Current round not found."));
 
-        boolean alreadyPlayed = playerRoundRepository.findByPlayerIdAndRoundId(playerId, currentRound.getId()).isPresent();
+        boolean alreadyPlayed = playerRoundRepository.findByPlayerIdAndRoundId(playerId, currentRound.getId())
+                .isPresent();
         if (alreadyPlayed) {
             throw new InvalidGameActionException("Player has already completed this round.");
         }
@@ -75,8 +75,7 @@ public class RoundService {
 
         int housingDiceRoll = new java.util.Random().nextInt(6) + 1;
         long housingCost = housingService.calculateHousingCost(
-                player.getHousingType(), game.getCurrentRound(), housingDiceRoll
-        );
+                player.getHousingType(), game.getCurrentRound(), housingDiceRoll);
         player.setCashBalanceKobo(player.getCashBalanceKobo() - housingCost);
         playerRound.setHousingCostPaidKobo(housingCost);
 
@@ -103,11 +102,13 @@ public class RoundService {
         playerRepository.save(player);
         playerRoundRepository.save(playerRound);
 
+        RoundResultResponse response = buildRoundResult(playerRound, diceResult.eventDescription());
+        eventPublisher.publishRoundCompleted(game.getGameCode(), response);
+
         checkAndAdvanceRound(game, currentRound);
 
-        return buildRoundResult(playerRound, diceResult.eventDescription());
+        return response;
     }
-
 
     private void checkAndAdvanceRound(Game game, Round currentRound) {
         int totalPlayers = playerRepository.countByGameId(game.getId());
@@ -152,8 +153,9 @@ public class RoundService {
         });
 
         gameRepository.save(game);
+        eventPublisher.publishGameFinished(game.getGameCode(),
+                getLeaderboard(game.getGameCode(), game.getCurrentRound()));
     }
-
 
     public LeaderBoard getLeaderboard(String gameCode, int roundNumber) {
         Game game = gameRepository.findByGameCode(gameCode)

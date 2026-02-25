@@ -26,8 +26,12 @@ public class DataSeeder {
             if (housingOptionRepository.count() == 0) {
                 seedHousingOptions();
             }
+            if (diceEventRepository.count() == 0) {
+                seedDiceEvents();
+            }
         } catch (Exception e) {
             seedHousingOptions();
+            seedDiceEvents();
         }
     }
 
