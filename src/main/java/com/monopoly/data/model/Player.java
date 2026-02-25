@@ -9,7 +9,6 @@ import lombok.Setter;
 import java.util.List;
 import java.util.ArrayList;
 
-
 @Entity
 @Setter
 @Getter
@@ -32,7 +31,7 @@ public class Player {
     private Long cashBalanceKobo = 240_000_000L;
     private Long loanBalanceKobo = 150_000_000L;
     private Long creditScore = 500L;
-    private Long monthlySalaryKobo = 40_000_000L;
+    private Long monthlySalaryKobo = 240_000_000L;
     @Enumerated(EnumType.STRING)
     private HousingType housingType;
     private Boolean missNextSalary = false;
@@ -47,4 +46,3 @@ public class Player {
     @JsonIgnore
     private List<Investment> investments = new ArrayList<>();
 }
-

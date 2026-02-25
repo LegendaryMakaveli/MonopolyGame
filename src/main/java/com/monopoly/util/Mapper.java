@@ -9,7 +9,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class Mapper {
     private LoanService loanService;
@@ -114,7 +113,8 @@ public class Mapper {
         medical.setIsSpreadReturn(false);
     }
 
-    public static void mapToInvestmentYield(Player player, Game game, DiceEvent event, Investment investment, long cost) {
+    public static void mapToInvestmentYield(Player player, Game game, DiceEvent event, Investment investment,
+            long cost) {
         investment.setPlayer(player);
         investment.setGame(game);
         investment.setInvestmentType(DiceEventType.BAD_INVESTMENT);
@@ -123,7 +123,8 @@ public class Mapper {
         investment.setTotalReturnKobo(event.getReturnAmountKobo());
     }
 
-    public static void mapToGoodInvestment(Player player, Game game, DiceEvent event, Investment investment, long cost) {
+    public static void mapToGoodInvestment(Player player, Game game, DiceEvent event, Investment investment,
+            long cost) {
         investment.setPlayer(player);
         investment.setGame(game);
         investment.setInvestmentType(DiceEventType.GOOD_INVESTMENT);
@@ -132,7 +133,8 @@ public class Mapper {
         investment.setTotalReturnKobo(event.getReturnAmountKobo());
     }
 
-    public static PlayerHistoryResponse.@NonNull RoundSummary getRoundSummary(PlayerRound pr, PlayerHistoryResponse.RoundSummary summary) {
+    public static PlayerHistoryResponse.@NonNull RoundSummary getRoundSummary(PlayerRound pr,
+            PlayerHistoryResponse.RoundSummary summary) {
         summary.setRoundNumber(pr.getRound().getRoundNumber());
         summary.setSalaryReceived(formatNaira(pr.getSalaryReceivedKobo()));
         summary.setHousingType(pr.getHousingType());
@@ -155,10 +157,12 @@ public class Mapper {
         response.setCreditScore(player.getCreditScore());
         response.setCurrentCashBalance(formatNaira(player.getCashBalanceKobo()));
         response.setCurrentLoanBalance(formatNaira(player.getLoanBalanceKobo()));
-        response.setCurrentNetWorth(formatNaira(player.getCashBalanceKobo() - player.getLoanBalanceKobo()));
+        long netWorth = player.getFinalNetWorthKobo() != null ? player.getFinalNetWorthKobo()
+                : (player.getCashBalanceKobo() - player.getLoanBalanceKobo());
+        response.setCurrentNetWorth(formatNaira(netWorth));
     }
 
-    public  @NonNull LoanPreviewResponse getLoanPreviewResponse(long proposedPaymentNaira, Player player) {
+    public @NonNull LoanPreviewResponse getLoanPreviewResponse(long proposedPaymentNaira, Player player) {
         long proposedPaymentKobo = proposedPaymentNaira * 100;
         long currentLoan = player.getLoanBalanceKobo();
         long balanceAfterPayment = Math.max(0, currentLoan - proposedPaymentKobo);
@@ -188,6 +192,5 @@ public class Mapper {
     private static String formatNaira(long kobo) {
         return String.format("₦%,d", kobo / 100);
     }
-
 
 }

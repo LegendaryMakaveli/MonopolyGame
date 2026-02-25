@@ -1,6 +1,5 @@
 package com.monopoly.service;
 
-
 import com.monopoly.data.model.DiceEventType;
 import com.monopoly.data.model.Investment;
 import com.monopoly.data.model.Player;
@@ -59,7 +58,8 @@ public class InvestmentService {
 
         if (investment.getInvestmentType() == DiceEventType.BAD_INVESTMENT) {
             int remainingRoundsAtTimeOfInvestment = totalRounds - roundInvested;
-            if (remainingRoundsAtTimeOfInvestment <= 0) return 0L;
+            if (remainingRoundsAtTimeOfInvestment <= 0)
+                return 0L;
 
             boolean isAfterInvestment = currentRound > roundInvested;
             if (isAfterInvestment && !investment.getIsFullyPaidOut()) {
@@ -71,7 +71,13 @@ public class InvestmentService {
                 return perRoundPayout;
             }
         }
-
         return 0L;
+    }
+
+    public long calculateTotalInvestmentValue(Player player) {
+        List<Investment> active = investmentRepository.findByPlayerIdAndIsFullyPaidOut(player.getId(), false);
+        return active.stream()
+                .mapToLong(inv -> inv.getTotalReturnKobo() - inv.getTotalPaidOutKobo())
+                .sum();
     }
 }

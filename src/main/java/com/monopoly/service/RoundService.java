@@ -65,7 +65,7 @@ public class RoundService {
 
         long salary = 0L;
         if (!player.getMissNextSalary()) {
-            salary = SALARY_KOBO;
+            salary = player.getMonthlySalaryKobo();
             player.setCashBalanceKobo(player.getCashBalanceKobo() + salary);
         } else {
             player.setMissNextSalary(false);
@@ -92,7 +92,8 @@ public class RoundService {
         playerRound.setEventType(diceResult.eventType());
         playerRound.setEventAmountKobo(diceResult.eventAmountKobo());
 
-        long netWorth = player.getCashBalanceKobo() - player.getLoanBalanceKobo();
+        long investmentValue = investmentService.calculateTotalInvestmentValue(player);
+        long netWorth = player.getCashBalanceKobo() - player.getLoanBalanceKobo() + investmentValue;
         player.setFinalNetWorthKobo(netWorth);
         playerRound.setCashBalanceEndKobo(player.getCashBalanceKobo());
         playerRound.setNetWorthKobo(netWorth);
