@@ -15,30 +15,32 @@ public class RoundResultResponse {
     private String playerName;
     private Integer roundNumber;
 
-    private Long salaryReceivedKobo;
+    private Long salaryReceived;
     private HousingType housingType;
-    private Long housingCostKobo;
-    private Long survivalCostKobo;
-    private Long loanPaymentKobo;
-    private Long loanBalanceRemainingKobo;
+    private Long housingCost;
+    private Long survivalCost;
+    private Long loanPayment;
+    private Long loanBalanceRemaining;
 
     private Integer diceRoll;
     private DiceEventType eventType;
     private String eventDescription;
-    private Long eventAmountKobo;
+    private Long eventAmount;
 
-    private Long cashBalanceEndKobo;
-    private Long netWorthKobo;
+    private Long cashBalanceEnd;
+    private Long netWorth;
 
 
 
 
 
     public String getFormattedNetWorth() {
-        return String.format("₦%,d", netWorthKobo / 100);
+        if (netWorth == null) return "₦0";
+        return String.format("₦%,d", netWorth);
     }
 
     public String getFormattedCashBalance() {
-        return String.format("₦%,d", cashBalanceEndKobo / 100);
+        if (cashBalanceEnd == null) return "₦0";
+        return String.format("₦%,d", cashBalanceEnd);
     }
 }

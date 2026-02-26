@@ -28,15 +28,15 @@ public class Player {
 
     @Enumerated(EnumType.STRING)
     private PlayerStatus status = PlayerStatus.ACTIVE;
-    private Long cashBalanceKobo = 240_000_000L;
-    private Long loanBalanceKobo = 150_000_000L;
+    private Long cashBalance = 2_400_000L;
+    private Long loanBalance = 1_500_000L;
     private Long creditScore = 500L;
-    private Long monthlySalaryKobo = 240_000_000L;
+    private Long monthlySalary = 2_400_000L;
     @Enumerated(EnumType.STRING)
     private HousingType housingType;
     private Boolean missNextSalary = false;
     private Integer turnOrder;
-    private Long finalNetWorthKobo;
+    private Long finalNetWorth;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
     @JsonIgnore

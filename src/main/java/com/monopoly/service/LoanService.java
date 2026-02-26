@@ -1,6 +1,5 @@
 package com.monopoly.service;
 
-
 import com.monopoly.data.model.Player;
 import com.monopoly.data.repository.PlayerRepository;
 import com.monopoly.exception.InsufficientFundsException;
@@ -15,54 +14,52 @@ public class LoanService {
     private final PlayerRepository playerRepository;
 
     @Transactional
-    public long makeLoanPayment(Player player, long paymentKobo) {
-        if (paymentKobo < 0) {
+    public long makeLoanPayment(Player player, long payment) {
+        if (payment < 0) {
             throw new InvalidGameActionException("Loan payment cannot be negative.");
         }
 
-        if (paymentKobo > player.getLoanBalanceKobo()) {
+        if (payment > player.getLoanBalance()) {
             throw new InvalidGameActionException("Cannot pay more than the remaining loan balance of "
-                    + formatNaira(player.getLoanBalanceKobo()));
+                    + formatNaira(player.getLoanBalance()));
         }
 
-        if (paymentKobo > player.getCashBalanceKobo()) {
+        if (payment > player.getCashBalance()) {
             throw new InsufficientFundsException("Not enough cash. Available: "
-                    + formatNaira(player.getCashBalanceKobo()) + ", Trying to pay: " + formatNaira(paymentKobo));
+                    + formatNaira(player.getCashBalance()) + ", Trying to pay: " + formatNaira(payment));
         }
 
-
-        player.setCashBalanceKobo(player.getCashBalanceKobo() - paymentKobo);
-        player.setLoanBalanceKobo(player.getLoanBalanceKobo() - paymentKobo);
+        player.setCashBalance(player.getCashBalance() - payment);
+        player.setLoanBalance(player.getLoanBalance() - payment);
 
         playerRepository.save(player);
 
-        return player.getLoanBalanceKobo();
+        return player.getLoanBalance();
     }
-
 
     @Transactional
     public long applyInterest(Player player) {
-        if (player.getLoanBalanceKobo() <= 0) {
+        if (player.getLoanBalance() <= 0) {
             return 0L;
         }
 
-        long interest = Math.round(player.getLoanBalanceKobo() * 0.10);
-        long newBalance = player.getLoanBalanceKobo() + interest;
+        long interest = Math.round(player.getLoanBalance() * 0.10);
+        long newBalance = player.getLoanBalance() + interest;
 
-        player.setLoanBalanceKobo(newBalance);
+        player.setLoanBalance(newBalance);
         playerRepository.save(player);
 
         return newBalance;
     }
 
-
     public long previewInterest(long currentLoanBalance, long proposedPayment) {
         long balanceAfterPayment = currentLoanBalance - proposedPayment;
-        if (balanceAfterPayment <= 0) return 0L;
+        if (balanceAfterPayment <= 0)
+            return 0L;
         return Math.round(balanceAfterPayment * 0.10);
     }
 
-    private String formatNaira(long kobo) {
-        return String.format("₦%,d", kobo / 100);
+    private String formatNaira(long amount) {
+        return String.format("₦%,d", amount);
     }
 }

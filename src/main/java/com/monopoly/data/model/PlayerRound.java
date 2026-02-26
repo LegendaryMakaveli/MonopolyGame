@@ -25,19 +25,19 @@ public class PlayerRound {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "round_id")
     private Round round;
-    private Long salaryReceivedKobo;
+    private Long salaryReceived;
     @Enumerated(EnumType.STRING)
     private HousingType housingType;
-    private Long housingCostPaidKobo;
-    private Long survivalCostKobo = 70_000_000L;
-    private Long loanPaymentKobo;
-    private Long loanBalanceAfterKobo;
+    private Long housingCostPaid;
+    private Long survivalCost = 700_000L;
+    private Long loanPayment;
+    private Long loanBalanceAfter;
     private Integer diceRoll;
     @Enumerated(EnumType.STRING)
     private DiceEventType eventType;
-    private Long eventAmountKobo;
-    private Long cashBalanceEndKobo;
-    private Long netWorthKobo;
+    private Long eventAmount;
+    private Long cashBalanceEnd;
+    private Long netWorth;
     private Boolean isCompleted = false;
     private LocalDateTime completedAt;
 }

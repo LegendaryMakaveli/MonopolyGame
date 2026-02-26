@@ -7,15 +7,14 @@ import com.monopoly.exception.InvalidGameActionException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @AllArgsConstructor
 public class HousingService {
     private final HousingOptionRepository housingOptionRepository;
 
-
     public long calculateHousingCost(HousingType housingType, int roundNumber, int diceRoll) {
-        HousingOption option = housingOptionRepository.findByHousingType(housingType).orElseThrow(() -> new InvalidGameActionException("Housing option not found: " + housingType));
+        HousingOption option = housingOptionRepository.findByHousingType(housingType)
+                .orElseThrow(() -> new InvalidGameActionException("Housing option not found: " + housingType));
         long baseCost = option.getBaseCost();
 
         if (roundNumber == 1) {

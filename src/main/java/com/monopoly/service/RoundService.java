@@ -31,8 +31,8 @@ public class RoundService {
     private final DiceService diceService;
     private final InvestmentService investmentService;
     private final GameEventPublisher eventPublisher;
-    private static final long SURVIVAL_COST_KOBO = 70_000_000L;
-    private static final long SALARY_KOBO = 240_000_000L;
+    private static final long SURVIVAL_COST = 700_000L;
+    private static final long SALARY = 2_400_000L;
 
     @Transactional
     public RoundResultResponse playRound(Long playerId, long loanPayment) {
@@ -59,44 +59,44 @@ public class RoundService {
         playerRound.setPlayer(player);
         playerRound.setRound(currentRound);
         playerRound.setHousingType(player.getHousingType());
-        playerRound.setSurvivalCostKobo(SURVIVAL_COST_KOBO);
+        playerRound.setSurvivalCost(SURVIVAL_COST);
 
         investmentService.payoutPendingInvestments(player, game.getCurrentRound(), game.getTotalRounds());
 
         long salary = 0L;
         if (!player.getMissNextSalary()) {
-            salary = player.getMonthlySalaryKobo();
-            player.setCashBalanceKobo(player.getCashBalanceKobo() + salary);
+            salary = player.getMonthlySalary();
+            player.setCashBalance(player.getCashBalance() + salary);
         } else {
             player.setMissNextSalary(false);
             player.setStatus(PlayerStatus.ACTIVE);
         }
-        playerRound.setSalaryReceivedKobo(salary);
+        playerRound.setSalaryReceived(salary);
 
         int housingDiceRoll = new java.util.Random().nextInt(6) + 1;
         long housingCost = housingService.calculateHousingCost(
                 player.getHousingType(), game.getCurrentRound(), housingDiceRoll);
-        player.setCashBalanceKobo(player.getCashBalanceKobo() - housingCost);
-        playerRound.setHousingCostPaidKobo(housingCost);
+        player.setCashBalance(player.getCashBalance() - housingCost);
+        playerRound.setHousingCostPaid(housingCost);
 
-        player.setCashBalanceKobo(player.getCashBalanceKobo() - SURVIVAL_COST_KOBO);
+        player.setCashBalance(player.getCashBalance() - SURVIVAL_COST);
 
         long loanBalanceAfter = loanService.makeLoanPayment(player, loanPayment);
-        playerRound.setLoanPaymentKobo(loanPayment);
-        playerRound.setLoanBalanceAfterKobo(loanBalanceAfter);
+        playerRound.setLoanPayment(loanPayment);
+        playerRound.setLoanBalanceAfter(loanBalanceAfter);
 
         loanService.applyInterest(player);
 
         DiceService.DiceRollResult diceResult = diceService.rollAndApplyEvent(player, game);
         playerRound.setDiceRoll(diceResult.diceRoll());
         playerRound.setEventType(diceResult.eventType());
-        playerRound.setEventAmountKobo(diceResult.eventAmountKobo());
+        playerRound.setEventAmount(diceResult.eventAmount());
 
         long investmentValue = investmentService.calculateTotalInvestmentValue(player);
-        long netWorth = player.getCashBalanceKobo() - player.getLoanBalanceKobo() + investmentValue;
-        player.setFinalNetWorthKobo(netWorth);
-        playerRound.setCashBalanceEndKobo(player.getCashBalanceKobo());
-        playerRound.setNetWorthKobo(netWorth);
+        long netWorth = player.getCashBalance() - player.getLoanBalance() + investmentValue;
+        player.setFinalNetWorth(netWorth);
+        playerRound.setCashBalanceEnd(player.getCashBalance());
+        playerRound.setNetWorth(netWorth);
         playerRound.setIsCompleted(true);
         playerRound.setCompletedAt(LocalDateTime.now());
 
@@ -174,9 +174,9 @@ public class RoundService {
             standing.setRank(rank++);
             standing.setPlayerId(pr.getPlayer().getId());
             standing.setPlayerName(pr.getPlayer().getName());
-            standing.setNetWorthKobo(pr.getNetWorthKobo());
-            standing.setCashBalanceKobo(pr.getCashBalanceEndKobo());
-            standing.setLoanBalanceKobo(pr.getLoanBalanceAfterKobo());
+            standing.setNetWorth(pr.getNetWorth());
+            standing.setCashBalance(pr.getCashBalanceEnd());
+            standing.setLoanBalance(pr.getLoanBalanceAfter());
             standings.add(standing);
         }
 
@@ -191,18 +191,18 @@ public class RoundService {
         result.setPlayerId(pr.getPlayer().getId());
         result.setPlayerName(pr.getPlayer().getName());
         result.setRoundNumber(pr.getRound().getRoundNumber());
-        result.setSalaryReceivedKobo(pr.getSalaryReceivedKobo());
+        result.setSalaryReceived(pr.getSalaryReceived());
         result.setHousingType(pr.getHousingType());
-        result.setHousingCostKobo(pr.getHousingCostPaidKobo());
-        result.setSurvivalCostKobo(pr.getSurvivalCostKobo());
-        result.setLoanPaymentKobo(pr.getLoanPaymentKobo());
-        result.setLoanBalanceRemainingKobo(pr.getLoanBalanceAfterKobo());
+        result.setHousingCost(pr.getHousingCostPaid());
+        result.setSurvivalCost(pr.getSurvivalCost());
+        result.setLoanPayment(pr.getLoanPayment());
+        result.setLoanBalanceRemaining(pr.getLoanBalanceAfter());
         result.setDiceRoll(pr.getDiceRoll());
         result.setEventType(pr.getEventType());
         result.setEventDescription(eventDescription);
-        result.setEventAmountKobo(pr.getEventAmountKobo());
-        result.setCashBalanceEndKobo(pr.getCashBalanceEndKobo());
-        result.setNetWorthKobo(pr.getNetWorthKobo());
+        result.setEventAmount(pr.getEventAmount());
+        result.setCashBalanceEnd(pr.getCashBalanceEnd());
+        result.setNetWorth(pr.getNetWorth());
         return result;
     }
 

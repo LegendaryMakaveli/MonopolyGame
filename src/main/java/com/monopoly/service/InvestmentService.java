@@ -27,9 +27,9 @@ public class InvestmentService {
             long payout = calculatePayout(investment, currentRound, totalRounds);
 
             if (payout > 0) {
-                player.setCashBalanceKobo(player.getCashBalanceKobo() + payout);
-                investment.setTotalPaidOutKobo(investment.getTotalPaidOutKobo() + payout);
-                if (investment.getTotalPaidOutKobo() >= investment.getTotalReturnKobo()) {
+                player.setCashBalance(player.getCashBalance() + payout);
+                investment.setTotalPaidOut(investment.getTotalPaidOut() + payout);
+                if (investment.getTotalPaidOut() >= investment.getTotalReturn()) {
                     investment.setIsFullyPaidOut(true);
                 }
 
@@ -51,7 +51,7 @@ public class InvestmentService {
         if (investment.getInvestmentType() == DiceEventType.GOOD_INVESTMENT) {
             boolean isNextRound = currentRound == roundInvested + 1;
             if (isNextRound && !investment.getIsFullyPaidOut()) {
-                return investment.getTotalReturnKobo();
+                return investment.getTotalReturn();
             }
             return 0L;
         }
@@ -63,10 +63,10 @@ public class InvestmentService {
 
             boolean isAfterInvestment = currentRound > roundInvested;
             if (isAfterInvestment && !investment.getIsFullyPaidOut()) {
-                long perRoundPayout = investment.getTotalReturnKobo() / remainingRoundsAtTimeOfInvestment;
+                long perRoundPayout = investment.getTotalReturn() / remainingRoundsAtTimeOfInvestment;
                 boolean isLastRound = currentRound == totalRounds;
                 if (isLastRound) {
-                    return investment.getTotalReturnKobo() - investment.getTotalPaidOutKobo();
+                    return investment.getTotalReturn() - investment.getTotalPaidOut();
                 }
                 return perRoundPayout;
             }
@@ -77,7 +77,7 @@ public class InvestmentService {
     public long calculateTotalInvestmentValue(Player player) {
         List<Investment> active = investmentRepository.findByPlayerIdAndIsFullyPaidOut(player.getId(), false);
         return active.stream()
-                .mapToLong(inv -> inv.getTotalReturnKobo() - inv.getTotalPaidOutKobo())
+                .mapToLong(inv -> inv.getTotalReturn() - inv.getTotalPaidOut())
                 .sum();
     }
 }

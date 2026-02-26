@@ -28,9 +28,9 @@ public class Investment {
     @Enumerated(EnumType.STRING)
     private DiceEventType investmentType;
     private Integer investedInRound;
-    private Long amountInvestedKobo;
-    private Long totalReturnKobo;
-    private Long totalPaidOutKobo = 0L;
+    private Long amountInvested;
+    private Long totalReturn;
+    private Long totalPaidOut = 0L;
     private Boolean isFullyPaidOut = false;
 }
 

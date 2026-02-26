@@ -11,13 +11,11 @@ public class PlayerStanding {
     private Integer rank;
     private Long playerId;
     private String playerName;
-    private Long netWorthKobo;
-    private Long cashBalanceKobo;
-    private Long loanBalanceKobo;
-
-
+    private Long netWorth;
+    private Long cashBalance;
+    private Long loanBalance;
 
     public String getFormattedNetWorth() {
-        return String.format("₦%,d", netWorthKobo / 100);
+        return String.format("₦%,d", netWorth);
     }
 }

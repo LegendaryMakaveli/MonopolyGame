@@ -21,7 +21,7 @@ public class DiceEvent {
     private DiceEventType eventType;
     private String title;
     private String description;
-    private Long amountKobo;
-    private Long returnAmountKobo;
+    private Long amount;
+    private Long returnAmount;
     private Boolean isSpreadReturn;
 }

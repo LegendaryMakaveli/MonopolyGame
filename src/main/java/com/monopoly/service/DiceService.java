@@ -1,6 +1,5 @@
 package com.monopoly.service;
 
-
 import com.monopoly.data.model.*;
 import com.monopoly.data.repository.DiceEventRepository;
 import com.monopoly.data.repository.InvestmentRepository;
@@ -23,7 +22,6 @@ public class DiceService {
     private final PlayerRepository playerRepository;
     private final Random random = new Random();
 
-
     @Transactional
     public DiceRollResult rollAndApplyEvent(Player player, Game game) {
         int roll = random.nextInt(6) + 1;
@@ -31,13 +29,12 @@ public class DiceService {
         DiceEvent event = diceEventRepository.findByDiceValue(roll)
                 .orElseThrow(() -> new InvalidGameActionException("No event configured for dice value: " + roll));
 
-        long eventAmountKobo = applyEvent(player, game, event);
+        long eventAmount = applyEvent(player, game, event);
 
         playerRepository.save(player);
 
-        return new DiceRollResult(roll, event.getEventType(), event.getDescription(), eventAmountKobo);
+        return new DiceRollResult(roll, event.getEventType(), event.getDescription(), eventAmount);
     }
-
 
     private long applyEvent(Player player, Game game, DiceEvent event) {
         return switch (event.getEventType()) {
@@ -49,20 +46,20 @@ public class DiceService {
             }
 
             case MEDICAL_EMERGENCY, FAMILY_EMERGENCY -> {
-                long cost = event.getAmountKobo();
-                player.setCashBalanceKobo(player.getCashBalanceKobo() - cost);
+                long cost = event.getAmount();
+                player.setCashBalance(player.getCashBalance() - cost);
                 yield -cost;
             }
 
             case FAMILY_SUPPORT -> {
-                long income = event.getAmountKobo();
-                player.setCashBalanceKobo(player.getCashBalanceKobo() + income);
+                long income = event.getAmount();
+                player.setCashBalance(player.getCashBalance() + income);
                 yield income;
             }
 
             case GOOD_INVESTMENT -> {
-                long cost = event.getAmountKobo();
-                player.setCashBalanceKobo(player.getCashBalanceKobo() - cost);
+                long cost = event.getAmount();
+                player.setCashBalance(player.getCashBalance() - cost);
 
                 Investment investment = new Investment();
                 mapToGoodInvestment(player, game, event, investment, cost);
@@ -72,8 +69,8 @@ public class DiceService {
             }
 
             case BAD_INVESTMENT -> {
-                long cost = event.getAmountKobo();
-                player.setCashBalanceKobo(player.getCashBalanceKobo() - cost);
+                long cost = event.getAmount();
+                player.setCashBalance(player.getCashBalance() - cost);
 
                 Investment investment = new Investment();
                 mapToInvestmentYield(player, game, event, investment, cost);
@@ -84,11 +81,10 @@ public class DiceService {
         };
     }
 
-
     public record DiceRollResult(
             int diceRoll,
             DiceEventType eventType,
             String eventDescription,
-            long eventAmountKobo
-    ) {}
+            long eventAmount) {
+    }
 }

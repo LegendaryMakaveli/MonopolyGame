@@ -10,9 +10,13 @@ import java.util.Optional;
 
 public interface PlayerRoundRepository extends JpaRepository<PlayerRound, Long> {
     List<PlayerRound> findByPlayerIdOrderByRoundRoundNumber(Long playerId);
+
     Optional<PlayerRound> findByPlayerIdAndRoundId(Long playerId, Long roundId);
+
     List<PlayerRound> findByRoundId(Long roundId);
-    @Query("SELECT pr FROM PlayerRound pr WHERE pr.round.id = :roundId AND pr.isCompleted = true ORDER BY pr.netWorthKobo DESC")
+
+    @Query("SELECT pr FROM PlayerRound pr WHERE pr.round.id = :roundId AND pr.isCompleted = true ORDER BY pr.netWorth DESC")
     List<PlayerRound> findRoundLeaderboard(@Param("roundId") Long roundId);
+
     int countByRoundIdAndIsCompleted(Long roundId, Boolean isCompleted);
 }

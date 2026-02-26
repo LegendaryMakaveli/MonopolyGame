@@ -1,6 +1,5 @@
 package com.monopoly.util;
 
-
 import com.monopoly.data.model.Game;
 import com.monopoly.data.model.Player;
 import com.monopoly.dto.response.GameResponse;
@@ -33,13 +32,13 @@ public class ResponseMapper {
         response.setHousingType(player.getHousingType());
         response.setTurnOrder(player.getTurnOrder());
         response.setCreditScore(player.getCreditScore());
-        response.setCashBalance(formatNaira(player.getCashBalanceKobo()));
-        response.setLoanBalance(formatNaira(player.getLoanBalanceKobo()));
-        response.setNetWorth(formatNaira(player.getCashBalanceKobo() - player.getLoanBalanceKobo()));
+        response.setCashBalance(formatNaira(player.getCashBalance()));
+        response.setLoanBalance(formatNaira(player.getLoanBalance()));
+        response.setNetWorth(formatNaira(player.getCashBalance() - player.getLoanBalance()));
         return response;
     }
 
-    private String formatNaira(long kobo) {
-        return String.format("₦%,d", kobo / 100);
+    private String formatNaira(long amount) {
+        return String.format("₦%,d", amount);
     }
 }
