@@ -1,5 +1,6 @@
 package com.monopoly.data.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,12 @@ public class PlayerRound {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
+    @JsonIgnore
     private Player player;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "round_id")
+    @JsonIgnore
     private Round round;
     private Long salaryReceived;
     @Enumerated(EnumType.STRING)

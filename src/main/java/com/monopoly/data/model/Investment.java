@@ -1,6 +1,6 @@
 package com.monopoly.data.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +19,12 @@ public class Investment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
+    @JsonIgnore
     private Player player;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Game game;
 
     @Enumerated(EnumType.STRING)
@@ -33,4 +35,3 @@ public class Investment {
     private Long totalPaidOut = 0L;
     private Boolean isFullyPaidOut = false;
 }
-

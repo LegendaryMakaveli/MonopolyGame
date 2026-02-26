@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class Round {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
+    @JsonIgnore
     private Game game;
     private Integer roundNumber;
 
@@ -37,5 +39,6 @@ public class Round {
     private LocalDateTime completedAt;
 
     @OneToMany(mappedBy = "round", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<PlayerRound> playerRounds = new ArrayList<>();
 }

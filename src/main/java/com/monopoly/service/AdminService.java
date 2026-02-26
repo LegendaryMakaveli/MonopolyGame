@@ -1,6 +1,5 @@
 package com.monopoly.service;
 
-
 import com.monopoly.data.model.Game;
 import com.monopoly.data.model.GameStatus;
 import com.monopoly.data.model.Player;
@@ -22,9 +21,6 @@ public class AdminService {
     private final PlayerRepository playerRepository;
     private final GameEventPublisher eventPublisher;
 
-
-
-
     public List<Game> getAllGames() {
         return gameRepository.findAll();
     }
@@ -32,7 +28,6 @@ public class AdminService {
     public List<Game> getGamesByStatus(GameStatus status) {
         return gameRepository.findByStatus(status);
     }
-
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -44,7 +39,6 @@ public class AdminService {
         return playerRepository.findByGameIdOrderByTurnOrder(game.getId());
     }
 
-
     @Transactional
     public String deletePlayer(Long playerId) {
         Player player = playerRepository.findById(playerId)
@@ -52,18 +46,23 @@ public class AdminService {
 
         Game game = player.getGame();
 
-        if (game.getStatus() == GameStatus.IN_PROGRESS) throw new InvalidGameActionException("Cannot delete a player while game is in progress. " + "The new player should continue under this player's account.");
+        if (game.getStatus() == GameStatus.IN_PROGRESS)
+            throw new InvalidGameActionException("Cannot delete a player while game is in progress. "
+                    + "The new player should continue under this player's account.");
 
         String playerName = player.getName();
         String gameCode = game.getGameCode();
+
+        if (game.getPlayers() != null) {
+            game.getPlayers().remove(player);
+        }
+
         playerRepository.delete(player);
 
-        // Tell remaining players in the lobby that a slot opened up
         eventPublisher.publishPlayerRemoved(gameCode, playerName);
 
         return playerName + " has been removed from the game. A new player can now join.";
     }
-
 
     @Transactional
     public String deleteAllPlayersInGame(String gameCode) {
@@ -75,6 +74,7 @@ public class AdminService {
         }
 
         List<Player> players = playerRepository.findByGameIdOrderByTurnOrder(game.getId());
+        game.getPlayers().clear();
         playerRepository.deleteAll(players);
 
         return "All " + players.size() + " players removed from game " + gameCode + ". Game is ready for new players.";
@@ -87,8 +87,7 @@ public class AdminService {
 
         if (game.getStatus() == GameStatus.IN_PROGRESS) {
             throw new InvalidGameActionException(
-                    "Cannot delete a game that is in progress. End the game first."
-            );
+                    "Cannot delete a game that is in progress. End the game first.");
         }
 
         gameRepository.delete(game);
