@@ -46,10 +46,6 @@ public class AdminService {
 
         Game game = player.getGame();
 
-        if (game.getStatus() == GameStatus.IN_PROGRESS)
-            throw new InvalidGameActionException("Cannot delete a player while game is in progress. "
-                    + "The new player should continue under this player's account.");
-
         String playerName = player.getName();
         String gameCode = game.getGameCode();
 
@@ -69,9 +65,6 @@ public class AdminService {
         Game game = gameRepository.findByGameCode(gameCode)
                 .orElseThrow(() -> new GameNotFoundException("Game not found: " + gameCode));
 
-        if (game.getStatus() == GameStatus.IN_PROGRESS) {
-            throw new InvalidGameActionException("Cannot delete players while game is in progress.");
-        }
 
         List<Player> players = playerRepository.findByGameIdOrderByTurnOrder(game.getId());
         game.getPlayers().clear();
@@ -85,10 +78,6 @@ public class AdminService {
         Game game = gameRepository.findByGameCode(gameCode)
                 .orElseThrow(() -> new GameNotFoundException("Game not found: " + gameCode));
 
-        if (game.getStatus() == GameStatus.IN_PROGRESS) {
-            throw new InvalidGameActionException(
-                    "Cannot delete a game that is in progress. End the game first.");
-        }
 
         gameRepository.delete(game);
         return "Game " + gameCode + " and all its data have been deleted.";

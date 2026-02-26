@@ -38,7 +38,7 @@ public class Round {
 
     private LocalDateTime completedAt;
 
-    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<PlayerRound> playerRounds = new ArrayList<>();
 }

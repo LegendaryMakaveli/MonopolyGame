@@ -38,11 +38,11 @@ public class Player {
     private Integer turnOrder;
     private Long finalNetWorth;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<PlayerRound> playerRounds = new ArrayList<>();
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Investment> investments = new ArrayList<>();
 }
